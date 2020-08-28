@@ -1,0 +1,20 @@
+SED能谱下载
+https://github.com/keflavich/HiGal_SEDfitter
+
+我们的源大部分都有ATLASGAL 870 micron数据，做SED时也可以把870 micron数据加入
+https://atlasgal.mpifr-bonn.mpg.de/cgi-bin/ATLASGAL_DATABASE.cgi   ATLASGAL cutout images可以从这里下载
+Planck+ATLASGAL数据可以从这里下载https://atlasgal.mpifr-bonn.mpg.de/cgi-bin/ATLASGAL_DATASETS.cgi
+
+这个网站可以直接把Herschel巡天中你需要的那部分裁剪下来 以及其它红外波段数据（Spitzer wise）全部一起下载
+https://irsa.ipac.caltech.edu/irsaviewer/ 
+
+day1
+平均光谱 DS9看速度 channel 信号 header mom理论+例子
+Task in CASA: immoments at 
+https://casa.nrao.edu/Release3.4.0/docs/ UserMan/UserManse41.html 
+https://casaguides.nrao.edu/index.php/TWHydraBand7_Imaging_4.2
+
+如何导⼊入导出ﬁts cube: 
+https://spectral-cube.readthedocs.io/en/latest/manipulating.html 
+如何做moments 
+https://spectral-cube.readthedocs.io/en/latest/moments.html
