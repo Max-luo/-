@@ -1,0 +1,60 @@
+import aplpy
+import pylab as pl
+import regions
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import LogNorm
+import astropy.units as u
+from astropy.utils.data import download_file
+from astropy.io import fits  
+from astropy.utils import data
+from spectral_cube import SpectralCube
+from astroquery.esasky import ESASky
+from astroquery.utils import TableList
+from astropy.wcs import WCS
+from astropy import wcs
+from reproject import reproject_interp
+from spectral_cube import SpectralCube as sc
+
+hi_data = fits.open('I16037-5223_B3_12M_hcn.fits') [0] # Open the FITS file for reading
+cube = sc.read(hi_data,hdu=0)  # Initiate a SpectralCube
+
+cube = cube.with_spectral_unit(u.km / u.s, velocity_convention='radio')
+
+# # hi_data = fits.open('I16037-5223_B3_12M_hco.fits') [0] # Open the FITS file for reading
+# # # cube = sc.read(hi_data,hdu=0)
+# cube = cube.with_spectral_unit(u.km / u.s, velocity_convention='radio')
+_Tb_m = np.nan_to_num(cube.hdu.data)
+# ---------------reduce continuum dimension-----------------
+cont_data = np.squeeze(hi_data.data)
+cont_data = np.nan_to_num(cont_data)
+_data1 = np.squeeze(hi_data.data)
+_data1 = np.nan_to_num(_data1)
+_w1 = wcs.WCS(hi_data, naxis=2)
+hi_data_cont2 = fits.ImageHDU(data=_data1, header=_w1.to_header())
+# ------------------------ reduce the noise data for moment maps -----------------------
+_data = np.nan_to_num(cube.hdu.data)
+_w = wcs.WCS(cube.hdu.header)
+rms = np.std(_data[20,:,:])
+idm = np.where(_data < rms*5) # bellow the noise level is set to zero.
+_data[idm] = 0
+sub_cube = sc(data=_data, wcs=_w)
+sub_cube= sub_cube.with_spectral_unit(u.km / u.s)
+print(rms)
+
+hdu_in = hi_data_cont2
+scu_in = sub_cube
+
+sub_cube_slab = sub_cube.spectral_slab(-90 *u.km / u.s, -75.023 *u.km / u.s)
+
+print(sub_cube_slab)
+
+moment_0 = sub_cube_slab.with_spectral_unit(u.km/u.s).moment(order=0)
+moment_0.write('h13cn_contour_1.fits')  
+f=aplpy.FITSFigure('I16037-5223_B3_12M.pbcor.newhd.fits')
+# f.recenter(330.2941,-0.3945,radius=0.008)
+f.recenter(241.90875,-52.51672,radius=0.006)
+f.show_colorscale(cmap='Set2_r')
+f.show_contour('h13cn_contour_1.fits',colors='Blue')
+f.add_colorbar()
+pl.show()
